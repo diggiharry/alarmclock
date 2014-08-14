@@ -67,12 +67,15 @@ void fader_wrapper() {
 boolean fade_mode = true;
 void switch_fade_mode() {
     if (fade_mode) {
-        int colors[12] =  { 1024,512,265, 512,1024,512, 265,512,1024, 512,512,512 };
-        fade.start_fade_to_color(colors);
+        int colors[12] =  { 512,1023,512, 1023,512,265, 265,512,1023, 512,512,512 };
+        //int colors[12] =  { 1023,1023,1023, 1023,1023,1023, 1023,1023,1023, 1023,1023,1023 };
+        fade.start_fade_to_color(colors,3000);
         fade_mode = false;
     }
     else {
         fade.start_rainbow();
+        //int colors[12] =  { 0,0,0, 0,0,0, 0,0,0, 0,0,0 };
+        //fade.start_fade_to_color(colors,3000);        
         fade_mode = true;
     }
 }
@@ -103,14 +106,14 @@ void setup() {
 
         timer.setInterval(30, fader_wrapper);
 
-        timer.setInterval(20000, switch_fade_mode);
+        timer.setInterval(6000, switch_fade_mode);
         
         enc.Init();
 	attachInterrupt(ENC_A,encoder_A_interrupt_fun, CHANGE);
 	attachInterrupt(ENC_B,encoder_B_interrupt_fun, CHANGE);
 	attachInterrupt(ENC_BUT,button_interrupt_fun, CHANGE);        
         
-        fade.start_rainbow();
+        //fade.start_rainbow();
 }
 
 void loop() {
