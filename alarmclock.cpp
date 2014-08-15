@@ -1,4 +1,3 @@
-
 #include "UI.h"
 #include <DueTimer.h>
 #include <SimpleTimer.h>;

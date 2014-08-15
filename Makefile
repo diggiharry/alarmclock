@@ -43,6 +43,8 @@ LIBDIR:=../Libraries
 MY_LIBS:= $(LIBDIR)/SPI $(LIBDIR)/Wire $(LIBDIR)/Digital_Light_Sensor $(LIBDIR)/DueTimer $(LIBDIR)/Encoder $(LIBDIR)/MPR121 $(LIBDIR)/Music $(LIBDIR)/RGBEnc $(LIBDIR)/RotEnc $(LIBDIR)/RTC $(LIBDIR)/Scroller $(LIBDIR)/ShiftBar $(LIBDIR)/ShiftBar_Anim $(LIBDIR)/SimpleTimer $(LIBDIR)/U8glib/utility $(LIBDIR)/U8glib $(LIBDIR)/UI
 MY_LIBS+= $(LIBDIR)/rtc_clock
 MY_LIBS+= $(LIBDIR)/Fader
+MY_LIBS+= $(LIBDIR)/Menu
+
 
 INCLUDES:=-I$(ADIR)/$(LIBSAM) -I$(ADIR)/$(CMSIS)/CMSIS/Include/ -I$(ADIR)/$(CMSIS)/Device/ATMEL/
 INCLUDES += -I$(ADIR)/$(SAM)/cores/arduino -I$(ADIR)/$(SAM)/variants/arduino_due_x
