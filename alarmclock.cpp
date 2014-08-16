@@ -16,9 +16,9 @@ boolean state_A = 0;
 boolean state_B = 0;
 boolean state_BUT = 0; 
 Encoder enc(ENC_A,ENC_B,ENC_BUT,0,254);
-UI ui(&enc);
+Fader fader;
+UI ui(&enc, &fader);
 SimpleTimer timer;
-Fader fade;
 
 #define LEDPIN 13
 
@@ -58,12 +58,10 @@ void blinkfast_wrapper() {
 }
 
 void fader_wrapper() {
-    unsigned long ms = millis();
-    fade.update(ms);
-    ui.cycleRBG(ms);
+    	fader.update(millis());
 }
 
-boolean fade_mode = true;
+/*boolean fade_mode = true;
 void switch_fade_mode() {
     if (fade_mode) {
         int colors[12] =  { 512,1023,512, 1023,512,265, 265,512,1023, 512,512,512 };
@@ -77,7 +75,7 @@ void switch_fade_mode() {
         //fade.start_fade_to_color(colors,3000);        
         fade_mode = true;
     }
-}
+}*/
 
 void setup() {
 
@@ -89,11 +87,11 @@ void setup() {
         //Serial.println("alarmlock initializing");
         
         pinMode(LEDPIN, OUTPUT);      
-        
-	ui.init();
-        
-        fade.init();
+
+      	ui.init();
    
+        fader.init();
+        
 	timer.setInterval(1000,blink_wrapper);
 	timer.setInterval(500,blinkfast_wrapper);
 	delay(300);
@@ -102,10 +100,8 @@ void setup() {
 	//delay(10);
         
 	timer.setInterval(20, draw_wrapper);
-
+       
         timer.setInterval(30, fader_wrapper);
-
-        timer.setInterval(6000, switch_fade_mode);
         
         enc.Init();
 	attachInterrupt(ENC_A,encoder_A_interrupt_fun, CHANGE);
@@ -113,6 +109,9 @@ void setup() {
 	attachInterrupt(ENC_BUT,button_interrupt_fun, CHANGE);        
         
         //fade.start_rainbow();
+        //int colors[12] =  { 512,1023,512, 1023,512,265, 265,512,1023, 512,512,512 };
+        //fader.start_fade_to_color(colors,1000);        
+        //fader.start_rainbow();
 }
 
 void loop() {
