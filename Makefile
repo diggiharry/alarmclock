@@ -44,6 +44,8 @@ MY_LIBS:= $(LIBDIR)/SPI $(LIBDIR)/Wire $(LIBDIR)/Digital_Light_Sensor $(LIBDIR)/
 MY_LIBS+= $(LIBDIR)/rtc_clock
 MY_LIBS+= $(LIBDIR)/Fader
 MY_LIBS+= $(LIBDIR)/Menu
+MY_LIBS+= $(LIBDIR)/Alarm
+
 
 
 INCLUDES:=-I$(ADIR)/$(LIBSAM) -I$(ADIR)/$(CMSIS)/CMSIS/Include/ -I$(ADIR)/$(CMSIS)/Device/ATMEL/
