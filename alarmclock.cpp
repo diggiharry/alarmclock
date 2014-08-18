@@ -61,6 +61,10 @@ void fader_wrapper() {
     	fader.update(millis());
 }
 
+void fader_start_wrapper() {
+        fader.start_sunrise(2000);
+}
+
 /*boolean fade_mode = true;
 void switch_fade_mode() {
     if (fade_mode) {
@@ -88,9 +92,9 @@ void setup() {
         
         pinMode(LEDPIN, OUTPUT);      
 
-      	ui.init();
-   
         fader.init();
+        
+      	ui.init();
         
 	timer.setInterval(1000,blink_wrapper);
 	timer.setInterval(500,blinkfast_wrapper);
@@ -112,9 +116,9 @@ void setup() {
         //int colors[12] =  { 512,1023,512, 1023,512,265, 265,512,1023, 512,512,512 };
         //fader.start_fade_to_color(colors,1000);        
         //fader.start_rainbow();
+        //timer.setTimeout(100, fader_start_wrapper);
 }
 
 void loop() {
   timer.run();
-
 }
