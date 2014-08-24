@@ -5,6 +5,10 @@
 #include <SPI.h>
 #include <Encoder.h>
 #include <Fader.h>
+#include <Widget.h>
+#include <U8glib.h>
+#include <u8g.h>
+#include <SoundManager.h>
 
 long previousMillis = 0;        // will store last time LED was updated
 long interval = 1000;           // interval at which to blink (milliseconds)
@@ -15,9 +19,12 @@ long interval = 1000;           // interval at which to blink (milliseconds)
 boolean state_A = 0;
 boolean state_B = 0;
 boolean state_BUT = 0; 
-Encoder enc(ENC_A,ENC_B,ENC_BUT,0,254);
+U8G_CLASS u8g(LCD_SCK, LCD_MOSI, LCD_CS, LCD_RS, LCD_RST);	
+Encoder enc(ENC_A,ENC_B,ENC_BUT);
 Fader fader;
-UI ui(&enc, &fader);
+SoundManager *sound;
+//UI ui(&enc, &fader, &u8g);
+UI *ui;
 SimpleTimer timer;
 
 #define LEDPIN 13
@@ -37,24 +44,24 @@ void button_interrupt_fun() {
 }
 
 void getTime_wrapper() {
-	ui.getTime();
+	ui->getTime();
 }
 
 void getLux_wrapper() {
-	ui.getLux();
+	ui->getLux();
 }
 
 void draw_wrapper() {
-	ui.draw();
-	ui.update_input();
+	ui->draw();
+	ui->input();
 }
 
 void blink_wrapper() {
-	ui.switch_blink();
+	Widget::switch_blink();
 }
 
 void blinkfast_wrapper() {
-	ui.switch_blinkfast();
+	Widget::switch_blinkfast();
 }
 
 void fader_wrapper() {
@@ -88,13 +95,21 @@ void setup() {
 	
 	Serial.begin(115200);
 
+        Serial3.begin(9600);
+        sound = new SoundManager(Serial3);
+        
+        ui = new UI(&enc, &fader, &u8g, sound);
+        
         //Serial.println("alarmlock initializing");
         
         pinMode(LEDPIN, OUTPUT);      
-
+        digitalWrite(LEDPIN,LOW);
+                        
+        u8g.setColorIndex(1);         //BW Mode       
+        
         fader.init();
         
-      	ui.init();
+      	ui->init();
         
 	timer.setInterval(1000,blink_wrapper);
 	timer.setInterval(500,blinkfast_wrapper);
@@ -117,6 +132,8 @@ void setup() {
         //fader.start_fade_to_color(colors,1000);        
         //fader.start_rainbow();
         //timer.setTimeout(100, fader_start_wrapper);
+        
+        digitalWrite(LEDPIN,HIGH);
 }
 
 void loop() {
