@@ -4,11 +4,14 @@
 #include <Wire.h>
 #include <SPI.h>
 #include <Encoder.h>
+#include <Switch.h>
 #include <Fader.h>
 #include <Widget.h>
 #include <U8glib.h>
 #include <u8g.h>
 #include <SoundManager.h>
+#include <Alarm.h>
+#include <rtc_clock.h>
 
 long previousMillis = 0;        // will store last time LED was updated
 long interval = 1000;           // interval at which to blink (milliseconds)
@@ -16,14 +19,20 @@ long interval = 1000;           // interval at which to blink (milliseconds)
 #define ENC_B 10
 #define ENC_A 11
 #define ENC_BUT 12
+#define ALARM_SW 9
+#define LIGHT_SW 8
+
 boolean state_A = 0;
 boolean state_B = 0;
 boolean state_BUT = 0; 
+Switch alarm_sw = Switch(ALARM_SW);
+Switch light_sw = Switch(LIGHT_SW);
 U8G_CLASS u8g(LCD_SCK, LCD_MOSI, LCD_CS, LCD_RS, LCD_RST);	
 Encoder enc(ENC_A,ENC_B,ENC_BUT);
-Fader fader;
+Fader *fader;
+RTC_clock *due_clock;
+Alarm *alarm;
 SoundManager *sound;
-//UI ui(&enc, &fader, &u8g);
 UI *ui;
 SimpleTimer timer;
 
@@ -65,28 +74,29 @@ void blinkfast_wrapper() {
 }
 
 void fader_wrapper() {
-    	fader.update(millis());
+    	fader->update(millis());
 }
 
-void fader_start_wrapper() {
-        fader.start_sunrise(2000);
+void alarm_wrapper() {
+    	ui->check_alarm();
 }
 
-/*boolean fade_mode = true;
-void switch_fade_mode() {
-    if (fade_mode) {
-        int colors[12] =  { 512,1023,512, 1023,512,265, 265,512,1023, 512,512,512 };
-        //int colors[12] =  { 1023,1023,1023, 1023,1023,1023, 1023,1023,1023, 1023,1023,1023 };
-        fade.start_fade_to_color(colors,3000);
-        fade_mode = false;
+void check_switches() {
+    if (alarm_sw.was_switched()) {
+        alarm->set(alarm_sw.is_on());   
+        Serial.println("Alarm switched");
     }
-    else {
-        fade.start_rainbow();
-        //int colors[12] =  { 0,0,0, 0,0,0, 0,0,0, 0,0,0 };
-        //fade.start_fade_to_color(colors,3000);        
-        fade_mode = true;
-    }
-}*/
+    if (light_sw.was_switched() ) {
+        if (light_sw.is_on()) fader->start_last_effect();
+        else fader->fade_out();        
+    }         
+}
+
+void update_switches() {
+    light_sw.updateSwitch();
+    alarm_sw.updateSwitch();
+    check_switches();
+}
 
 void setup() {
 
@@ -96,9 +106,16 @@ void setup() {
 	Serial.begin(115200);
 
         Serial3.begin(9600);
+        
+        fader = new Fader();
+
         sound = new SoundManager(Serial3);
         
-        ui = new UI(&enc, &fader, &u8g, sound);
+        due_clock = new RTC_clock(XTAL);
+
+        alarm = new Alarm(due_clock,sound,fader);
+        
+        ui = new UI(&enc, fader, &u8g, sound, due_clock, alarm);
         
         //Serial.println("alarmlock initializing");
         
@@ -107,7 +124,7 @@ void setup() {
                         
         u8g.setColorIndex(1);         //BW Mode       
         
-        fader.init();
+        fader->init();
         
       	ui->init();
         
@@ -121,18 +138,20 @@ void setup() {
 	timer.setInterval(20, draw_wrapper);
        
         timer.setInterval(30, fader_wrapper);
+
+        timer.setInterval(300, alarm_wrapper);
+        
+        timer.setInterval(10, update_switches);
+        
+        
         
         enc.Init();
 	attachInterrupt(ENC_A,encoder_A_interrupt_fun, CHANGE);
 	attachInterrupt(ENC_B,encoder_B_interrupt_fun, CHANGE);
 	attachInterrupt(ENC_BUT,button_interrupt_fun, CHANGE);        
-        
-        //fade.start_rainbow();
-        //int colors[12] =  { 512,1023,512, 1023,512,265, 265,512,1023, 512,512,512 };
-        //fader.start_fade_to_color(colors,1000);        
-        //fader.start_rainbow();
-        //timer.setTimeout(100, fader_start_wrapper);
-        
+    	//attachInterrupt(ALARM_SW,alarm_sw_interrupt_fun, CHANGE);        
+	//attachInterrupt(LIGHT_BUT,light_sw_interrupt_fun, CHANGE);        
+            
         digitalWrite(LEDPIN,HIGH);
 }
 

@@ -40,7 +40,7 @@ AR:=$(ADIR)/tools/gcc-arm-none-eabi/bin/arm-none-eabi-ar
 DEFINES:=-Dprintf=iprintf -DF_CPU=84000000L -DARDUINO=152 -D__SAM3X8E__ -DUSB_PID=0x003e -DUSB_VID=0x2341 -DUSBCON
 
 LIBDIR:=../Libraries
-MY_LIBS:= $(LIBDIR)/SPI $(LIBDIR)/Wire $(LIBDIR)/Digital_Light_Sensor $(LIBDIR)/DueTimer $(LIBDIR)/Encoder $(LIBDIR)/MPR121 $(LIBDIR)/Music $(LIBDIR)/RGBEnc $(LIBDIR)/RotEnc $(LIBDIR)/RTC $(LIBDIR)/Scroller $(LIBDIR)/ShiftBar $(LIBDIR)/ShiftBar_Anim $(LIBDIR)/SimpleTimer $(LIBDIR)/U8glib/utility $(LIBDIR)/U8glib $(LIBDIR)/UI
+MY_LIBS:= $(LIBDIR)/SPI $(LIBDIR)/Wire $(LIBDIR)/Digital_Light_Sensor $(LIBDIR)/DueTimer $(LIBDIR)/Input $(LIBDIR)/MPR121 $(LIBDIR)/RTC $(LIBDIR)/Scroller $(LIBDIR)/ShiftBar $(LIBDIR)/ShiftBar_Anim $(LIBDIR)/SimpleTimer $(LIBDIR)/U8glib/utility $(LIBDIR)/U8glib $(LIBDIR)/UI
 MY_LIBS+= $(LIBDIR)/rtc_clock
 MY_LIBS+= $(LIBDIR)/Fader
 MY_LIBS+= $(LIBDIR)/Alarm
