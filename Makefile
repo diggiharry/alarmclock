@@ -21,6 +21,7 @@
 ADIR:=../arduino-1.5.7/hardware
 #which serial port to use (add a file with SUBSYSTEMS=="usb", ATTRS{product}=="Arduino Due Prog. Port", ATTRS{idProduct}=="003d", ATTRS{idVendor}=="2341", SYMLINK+="arduino_due" in /etc/udev/rules.d/ to get this working)
 PORT:=/dev/ttyACM0
+#PORT:=/dev/ttyS0
 #if we want to verify the bossac upload, define this to -v
 VERIFY:=
 

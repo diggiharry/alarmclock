@@ -19,8 +19,8 @@ long interval = 1000;           // interval at which to blink (milliseconds)
 #define ENC_B 10
 #define ENC_A 11
 #define ENC_BUT 12
-#define ALARM_SW 9
-#define LIGHT_SW 8
+#define ALARM_SW 52
+#define LIGHT_SW 50
 
 boolean state_A = 0;
 boolean state_B = 0;
@@ -56,10 +56,6 @@ void getTime_wrapper() {
 	ui->getTime();
 }
 
-void getLux_wrapper() {
-	ui->getLux();
-}
-
 void draw_wrapper() {
 	ui->draw();
 	ui->input();
@@ -73,29 +69,33 @@ void blinkfast_wrapper() {
 	Widget::switch_blinkfast();
 }
 
-void fader_wrapper() {
-    	fader->update(millis());
-}
-
 void alarm_wrapper() {
     	ui->check_alarm();
 }
 
 void check_switches() {
     if (alarm_sw.was_switched()) {
-        alarm->set(alarm_sw.is_on());   
-        Serial.println("Alarm switched");
+        if (alarm->is_set()) alarm->disable_alarm();
+        else alarm->enable_alarm();
     }
     if (light_sw.was_switched() ) {
-        if (light_sw.is_on()) fader->start_last_effect();
-        else fader->fade_out();        
+        if (light_sw.is_on()) {
+            fader->start_last_effect();
+        }
+        else {
+            fader->fade_out();    
+        }
     }         
 }
 
 void update_switches() {
     light_sw.updateSwitch();
     alarm_sw.updateSwitch();
-    check_switches();
+}
+
+void fader_wrapper() {
+    	fader->update();
+        check_switches();
 }
 
 void setup() {
@@ -119,8 +119,8 @@ void setup() {
         
         //Serial.println("alarmlock initializing");
         
-        pinMode(LEDPIN, OUTPUT);      
-        digitalWrite(LEDPIN,LOW);
+        //pinMode(LEDPIN, OUTPUT);      
+        //digitalWrite(LEDPIN,LOW);
                         
         u8g.setColorIndex(1);         //BW Mode       
         
@@ -142,17 +142,11 @@ void setup() {
         timer.setInterval(300, alarm_wrapper);
         
         timer.setInterval(10, update_switches);
-        
-        
-        
+
         enc.Init();
 	attachInterrupt(ENC_A,encoder_A_interrupt_fun, CHANGE);
 	attachInterrupt(ENC_B,encoder_B_interrupt_fun, CHANGE);
 	attachInterrupt(ENC_BUT,button_interrupt_fun, CHANGE);        
-    	//attachInterrupt(ALARM_SW,alarm_sw_interrupt_fun, CHANGE);        
-	//attachInterrupt(LIGHT_BUT,light_sw_interrupt_fun, CHANGE);        
-            
-        digitalWrite(LEDPIN,HIGH);
 }
 
 void loop() {
